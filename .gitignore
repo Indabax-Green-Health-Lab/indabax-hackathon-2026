@@ -1,0 +1,48 @@
+# ======================
+# Données (ne pas commit)
+# ======================
+data/raw/
+data/processed/
+*.csv
+*.xlsx
+*.parquet
+
+# ======================
+# Environnement Python
+# ======================
+venv/
+.env
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# ======================
+# Jupyter Notebooks
+# ======================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ======================
+# Modèles ML (trop lourds)
+# ======================
+models/*.pkl
+models/*.h5
+models/*.joblib
+
+# ======================
+# IDE & OS
+# ======================
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# ======================
+# Rapports & outputs
+# ======================
+reports/figures/*.png
+reports/figures/*.jpg
