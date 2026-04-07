@@ -47,7 +47,7 @@ ensure("gdown")
 # ============================================================
 # 2. IMPORTS
 # ============================================================
-import os, time, warnings, json
+import os, time, warnings, json, tempfile
 warnings.filterwarnings("ignore")
 
 import numpy as np
@@ -81,11 +81,29 @@ pd.set_option("display.max_columns", 200)
 # ============================================================
 def telecharger_dataset():
     """Telecharge le dataset depuis Google Drive s'il n'est pas deja present."""
-    url = "https://drive.google.com/uc?id=1rywzjwphUrDuml-8yOGBd0qWZHwR90h1&export=download"
-    output = "DATASET_FINAL_INDABAX2026.xlsx"
+    file_id = "1YUgdRjMislcPk4pASMefCSYkoX1AdT5k"
+    output = os.path.join(tempfile.gettempdir(), "DATASET_FINAL_INDABAX2026.xlsx")
     if not os.path.exists(output):
         print("Telechargement du dataset depuis Google Drive...")
-        gdown.download(url, output, quiet=False)
+        candidates = [
+            {"id": file_id, "quiet": False},
+            {"url": f"https://drive.google.com/uc?id={file_id}", "quiet": False, "fuzzy": True},
+            {"url": f"https://drive.google.com/uc?export=download&id={file_id}", "quiet": False, "fuzzy": True},
+        ]
+        last_error = None
+        for params in candidates:
+            try:
+                result = gdown.download(output=output, **params)
+                if result and os.path.exists(output):
+                    break
+            except Exception as exc:
+                last_error = exc
+        if not os.path.exists(output):
+            raise RuntimeError(
+                "Impossible de telecharger le dataset depuis Google Drive. "
+                "Verifiez que le fichier est partage en mode 'Toute personne ayant le lien' "
+                f"et que l'identifiant {file_id} est valide."
+            ) from last_error
     return output
 
 FILEPATH = telecharger_dataset()
