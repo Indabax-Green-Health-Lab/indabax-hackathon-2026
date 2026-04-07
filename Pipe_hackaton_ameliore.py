@@ -42,6 +42,7 @@ ensure("openpyxl")
 ensure("lightgbm")
 ensure("xgboost")
 ensure("joblib")
+ensure("gdown")
 
 # ============================================================
 # 2. IMPORTS
@@ -70,6 +71,7 @@ from sklearn.metrics import (
 )
 import lightgbm as lgb
 import xgboost as xgb
+import gdown
 from joblib import dump
 
 pd.set_option("display.max_columns", 200)
@@ -77,7 +79,16 @@ pd.set_option("display.max_columns", 200)
 # ============================================================
 # 3. CONFIGURATION
 # ============================================================
-FILEPATH = r"C:\Users\hp\Desktop\TP_exp_AS2\Projet Hackaton\DATASET_FINAL_INDABAX2026.xlsx"
+def telecharger_dataset():
+    """Telecharge le dataset depuis Google Drive s'il n'est pas deja present."""
+    url = "https://drive.google.com/uc?id=1rywzjwphUrDuml-8yOGBd0qWZHwR90h1&export=download"
+    output = "DATASET_FINAL_INDABAX2026.xlsx"
+    if not os.path.exists(output):
+        print("Telechargement du dataset depuis Google Drive...")
+        gdown.download(url, output, quiet=False)
+    return output
+
+FILEPATH = telecharger_dataset()
 SHEET_NAME = 0
 TARGET = "proxy_pm25"
 TEST_YEARS = 1

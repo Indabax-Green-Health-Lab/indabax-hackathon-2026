@@ -13,6 +13,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import os
+import sys
+import subprocess
+import importlib
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -20,10 +23,21 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit as st
 import lightgbm as lgb
+from joblib import load as joblib_load
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import json
 from datetime import date, datetime
-from joblib import load as joblib_load
+
+
+def ensure(pkg, name=None):
+    try:
+        importlib.import_module(name or pkg)
+    except ImportError:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
+
+
+ensure("gdown")
+import gdown
 
 def json_converter(obj):
     """Convertit les types pandas/numpy/datetime en types JSON simples."""
@@ -176,7 +190,16 @@ st.set_page_config(
 # ============================================================
 # CHEMIN DU FICHIER
 # ============================================================
-FILEPATH = r"C:\Users\hp\Desktop\TP_exp_AS2\Projet Hackaton\DATASET_FINAL_INDABAX2026.xlsx"
+@st.cache_data(show_spinner="Téléchargement du dataset depuis Google Drive...")
+def telecharger_dataset():
+    url = "https://drive.google.com/uc?id=1rywzjwphUrDuml-8yOGBd0qWZHwR90h1&export=download"
+    output = "DATASET_FINAL_INDABAX2026.xlsx"
+    if not os.path.exists(output):
+        gdown.download(url, output, quiet=False)
+    return output
+
+
+FILEPATH = telecharger_dataset()
 RANDOM_STATE = 42
 FAST_SAMPLE_SCATTER = 2000
 MODEL_ARTEFACT_PATH = os.path.join("outputs_pipeline_hackathon", "meilleur_modele.joblib")
